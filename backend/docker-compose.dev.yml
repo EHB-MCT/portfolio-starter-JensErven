@@ -1,0 +1,24 @@
+version: "3.2"
+
+services:
+  api:
+    build: ./images/api
+    volumes:
+      - ./images/api/src:/usr/app/src
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - ./config/.env.dev
+    user: "node"
+    command: npm run dev
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    env_file:
+      - ./config/.env.dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: ["postgres", "-c", "log_statement=all"]

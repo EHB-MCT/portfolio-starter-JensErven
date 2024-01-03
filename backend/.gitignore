@@ -1,0 +1,6 @@
+/images/api/node_modules
+/config/development.env
+/config/production.env
+/config/test.env
+.env
+/config

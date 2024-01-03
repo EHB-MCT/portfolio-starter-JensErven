@@ -1,0 +1,9 @@
+version: "3.2"
+services:
+  api:
+    build: ./images/api
+    ports:
+      - "3000:3000"
+    user: "node"
+    environment:
+      - PORT=3000
