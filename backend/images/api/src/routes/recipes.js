@@ -8,13 +8,14 @@ const {
   deleteRecipe,
   getRecipeIngredients,
   getRecipeInstructions,
+  deleteAllRecipes,
 } = require("../controllers/recipe");
 
 /**
  * Retrieve a list of all recipes.
  * @name Get All Recipes
  * @route {GET} /api/recipes
- * @returns {Array.<Object>} Array of recipe objects.
+ * @returns {Array.<Object>} Array of recipe objects without the ingredients and instructions.
  */
 router.get("/", getRecipes);
 
@@ -23,7 +24,7 @@ router.get("/", getRecipes);
  * @name Get Recipe by ID
  * @route {GET} /api/recipes/:recipeId
  * @param {string} recipeId - ID of the recipe.
- * @returns {Object} Details of the requested recipe.
+ * @returns {Object} Details of the requested recipe without the ingredients and instructions.
  */
 router.get("/:recipeId", getRecipe);
 
@@ -31,7 +32,7 @@ router.get("/:recipeId", getRecipe);
  * Create a new recipe.
  * @name Create Recipe
  * @route {POST} /api/recipes
- * @param {Object} Recipe details - e.g., recipe_name, description, instructions.
+ * @param {Object} Recipe details - e.g., recipe_name, description, instructions, ingredients.
  * @returns {Object} Details of the newly created recipe.
  */
 router.post("/", createRecipe);
@@ -72,5 +73,13 @@ router.get("/:recipeId/ingredients", getRecipeIngredients);
  * @returns {Array.<Object>} Array of instructions for the specified recipe.
  */
 router.get("/:recipeId/instructions", getRecipeInstructions);
+
+/**
+ * Delete all recipes from the database.
+ * @name Delete All Recipes
+ * @route {DELETE} /api/recipes
+ * @returns {string} Confirmation message.
+ */
+router.delete("/", deleteAllRecipes);
 
 module.exports = router;
