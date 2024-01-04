@@ -1,26 +1,47 @@
-# DEV-5 Portfolio
+# DEV-5 RecipeSaver
+
+Dev-5 course-project task,
 
 ## Table of contents
-- [DEV-5 Portfolio](#dev-5-portfolio)
+- [DEV-5 RecipeSaver](#dev-5-recipesaver)
   - [Table of contents](#table-of-contents)
-  - [Task description](#task-description)
-  - [Startup Backend](#startup-backend)
-    - [Development Environment Setup](#development-environment-setup)
+  - [Purpose](#purpose)
+    - [Key Features](#key-features)
+  - [Quikstart Backend](#quikstart-backend)
+    - [Development Environment Quikstart](#development-environment-quikstart)
       - [About](#about)
       - [Prerequisites](#prerequisites)
       - [Steps](#steps)
+  - [Status](#status)
+  - [License](#license)
+  - [Endpoints](#endpoints)
+    - [User Authentication](#user-authentication)
+      - [Register User](#register-user)
+      - [Login User](#login-user)
+      - [Get User by ID](#get-user-by-id)
+      - [Delete User](#delete-user)
+      - [Delete All Users](#delete-all-users)
+    - [Recipes](#recipes)
+      - [Get All Recipes](#get-all-recipes)
+      - [Get Recipe by ID](#get-recipe-by-id)
+      - [Create Recipe](#create-recipe)
+      - [Update Recipe](#update-recipe)
+      - [Delete Recipe](#delete-recipe)
+      - [Get Recipe Ingredients](#get-recipe-ingredients)
+      - [Get Recipe Instructions](#get-recipe-instructions)
+      - [Get All Recipes from specific user](#get-all-recipes-from-specific-user)
 
-## Task description
+## Purpose
 
-This assignment serves to evaluate your quality as a developer. The conventions you follow,
-practices you employ or techniques you use are more important than the content of your
-application. The API you will write during this semester is allowed to have any subject you
-can think of*, as long as the documentation, conventions, tests, CI/CD and git match the
-desired standard. 
+This assignment serves as a comprehensive assessment of your proficiency as a developer. The primary focus is not only on the content of the application but also on the implementation of industry-standard practices, conventions, and techniques. The API developed during this semester provides functionalities for user authentication, allowing users to register, log in, and manage recipes with various customizable properties. The API includes essential endpoints for creating, updating, deleting, and retrieving recipes.
 
-## Startup Backend
+### Key Features
+- User Authentication: Register and log in functionalities for users.
+- Recipe Management: Create, update, delete, and retrieve recipes with customizable properties.
 
-### Development Environment Setup
+## Quikstart Backend
+
+### Development Environment Quikstart
 
 #### About
 
@@ -60,3 +81,116 @@ This setup guide helps configure the development environment for the backend app
    - Ensure the database contains the expected tables (`recipes` and `users`).
    - Test an API endpoint (e.g., liking) using Postman or any other REST client extension.
 
+## Status
+
+The project is currently in development.
+
+## License 
+
+This project is licensed under the [MIT License](LICENSE).
+
+## Endpoints
+
+### User Authentication
+
+#### Register User
+- **Endpoint:** `POST /api/users/register`
+- **Description:** Registers a new user.
+- **Request Body:**
+  ```json
+  {
+    "username": "example_user",
+    "email": "example@gmail.com",
+    "password": "example_password"
+  }
+- **Response:** Returns the newly registred user's details
+
+#### Login User
+- **Endpoint:** `POST /api/users/login`
+- **Description:** Authenticate and log in a user.
+- **Request Body:**
+    ```json
+  {
+    "email": "example@gmail.com",
+    "password": "example_password"
+  }
+- **Response:** Returns the user's details on successful login
+
+#### Get User by ID
+- **Endpoint:** `GET /api/users/:userId`
+- **Description:** Retrieves details of a specific user by their ID.
+- **Response:** Returns details of the requested user.
+
+#### Delete User
+- **Endpoint:** `DELETE /api/users/:userId`
+- **Description:** Deletes a user by their ID.
+- **Response:** Returns a confirmation message.
+
+#### Delete All Users
+- **Endpoint:** `DELETE /api/users`
+- **Description:** Deletes all users from the database.
+- **Response:** Returns a confirmation message.
+
+### Recipes
+
+#### Get All Recipes
+- **Endpoint:** `GET /api/recipes`
+- **Description:** Retrieves a list of all recipes.
+- **Response:** Returns an array of recipe objects without the ingredients and instructions.
+
+#### Get Recipe by ID
+- **Endpoint:** `GET /api/recipes/:recipeId`
+- **Description:** Retrieves details of a specific recipe by its ID.
+- **Response:** Returns details of the requested recipe without the ingredients and instructions.
+
+#### Create Recipe
+- **Endpoint:** `POST /api/recipes`
+- **Description:** Creates a new recipe.
+- **Request Body:**
+  ```json
+   {
+   "recipe_name": "Example Recipe",
+   "description": "This is an example recipe.",
+   "instructions": ["Step 1: Do something", "Step 2: Do something else"],
+   "ingredients": [
+      {"name": "Ingredient 1", "quantity": "2 cups"},
+      {"name": "Ingredient 2", "quantity": "1 tbsp"}
+   ]
+   }
+- **Response:** Returns details of the newly created recipe.
+
+#### Update Recipe
+- **Endpoint:** `PUT /api/recipes/:recipeId`
+- **Description:** Updates an existing recipe by its ID.
+- **Request Body:**
+  ```json
+   {
+   "recipe_name": "Example Recipe",
+   "description": "This is an example recipe.",
+   "instructions": ["Step 1: Do something", "Step 2: Do something else"],
+   "ingredients": [
+      {"name": "Ingredient 1", "quantity": "2 cups"},
+      {"name": "Ingredient 2", "quantity": "1 tbsp"}
+   ]
+   }
+- **Response:** Returns details of the updated recipe.
+
+#### Delete Recipe
+- **Endpoint:** `DELETE /api/recipes/:recipeId`
+- **Description:** Deletes a recipe by its ID.
+- **Response:** Returns a confirmation message.
+
+#### Get Recipe Ingredients
+- **Endpoint:** `GET /api/recipes/:recipeId/ingredients`
+- **Description:**  Retrieves ingredients of a recipe by its ID.
+- **Response:** Returns a list of ingredients for the specified recipe.
+
+#### Get Recipe Instructions
+- **Endpoint:** `GET /api/recipes/:recipeId/instructions`
+- **Description:** Retrieves instructions of a recipe by its ID.
+- **Response:** Returns a list of instructions for the specified recipe.
+
+#### Get All Recipes from specific user
+- **Endpoint:** `GET /api/recipes/user/:userId`
+- **Description:** Retrieves all recipes with a specific user ID.
+- **Response:** Returns an array of recipe objects without the ingredients and instructions.
