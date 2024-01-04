@@ -13,17 +13,17 @@ const poolConfig = {
 
 const pool = new Pool(poolConfig);
 
-const parseJSONField = (field) => {
-  return field ? JSON.parse(field) : [];
-};
-
+/**
+ * Retrieve a list of all recipes.
+ * @returns {Promise<Array>} Array of recipe objects without the ingredients and instructions.
+ */
 const getAllRecipes = async () => {
   try {
     const client = await pool.connect();
 
     // Fetch specific columns from the database
     const result = await client.query(
-      "SELECT id, recipe_name, description FROM recipes"
+      "SELECT id, recipe_name, description, user_id FROM recipes"
     );
 
     // Release the client back to the pool
@@ -38,13 +38,19 @@ const getAllRecipes = async () => {
   }
 };
 
+/**
+ * Retrieve a recipe by its id.
+ * @param {string} recipeId - The ID of the recipe.
+ * @returns {Promise<Array>} Array with this one recipe found.
+ * @throws {Error} Throws an error if there's an issue with fetching the recipe.
+ */
 const getRecipeById = async (recipeId) => {
   try {
     const client = await pool.connect();
 
     // Fetch a recipe by ID from the database
     const result = await client.query(
-      "SELECT id, recipe_name, description FROM recipes WHERE id = $1",
+      "SELECT id, recipe_name, description, user_id FROM recipes WHERE id = $1",
       [recipeId]
     );
 
@@ -60,7 +66,14 @@ const getRecipeById = async (recipeId) => {
   }
 };
 
-const createRecipe = async (recipeDetails) => {
+/**
+ * Create a new recipe for a specific user in the database.
+ * @param {string} userId - The ID of the user creating the recipe.
+ * @param {Object} recipeDetails - Details of the recipe to be created.
+ * @returns {Promise<Object>} Details of the newly created recipe with its unique ID.
+ * @throws {Error} Throws an error if there's an issue creating the recipe.
+ */
+const createRecipe = async (userId, recipeDetails) => {
   try {
     // Establish a connection from the pool
     const client = await pool.connect();
@@ -78,12 +91,13 @@ const createRecipe = async (recipeDetails) => {
 
     // Insert a new recipe into the database
     const insertQuery = `
-   INSERT INTO recipes (id, recipe_name, description, instructions, ingredients)
-   VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO recipes (id, user_id, recipe_name, description, instructions, ingredients)
+    VALUES ($1, $2, $3, $4, $5, $6)
    RETURNING id;
  `;
     const values = [
       randomUUID,
+      userId,
       recipe_name,
       description,
       stringifiedInstructions,
@@ -108,23 +122,56 @@ const createRecipe = async (recipeDetails) => {
   }
 };
 
+/**
+ * Update the props of a specific recipe.
+ * @param {string} recipeId - The ID of the recipe.
+ * @param {Object} recipeDetails - Details of the recipe to be updated.
+ * @returns {Promise<Object>} Details of the updated recipe with its unique ID.
+ * @throws {Error} Throws an error if there's an issue in updating the recipe.
+ */
 const updateRecipe = async (recipeId, updatedDetails) => {
   try {
     const client = await pool.connect();
 
-    // Update the recipe details in the database
-    const { recipe_name, description, instructions } = updatedDetails;
+    const values = [];
+    let updateQuery = "UPDATE recipes SET";
 
-    const updateQuery = `
-      UPDATE recipes
-      SET recipe_name = $1, description = $2, instructions = $3
-      WHERE id = $4
-      RETURNING id, recipe_name, description;
-    `;
+    // Destructure the updated details
+    const { recipe_name, description, instructions, ingredients } =
+      updatedDetails;
 
-    const values = [recipe_name, description, instructions, recipeId];
+    let index = 1; // Start index for placeholder values
+
+    if (recipe_name !== undefined) {
+      updateQuery += ` recipe_name = $${index},`;
+      values.push(recipe_name);
+      index++;
+    }
+    if (description !== undefined) {
+      updateQuery += ` description = $${index},`;
+      values.push(description);
+      index++;
+    }
+    if (instructions !== undefined) {
+      updateQuery += ` instructions = $${index},`;
+      values.push(JSON.stringify(instructions));
+      index++;
+    }
+    if (ingredients !== undefined) {
+      updateQuery += ` ingredients = $${index},`;
+      values.push(JSON.stringify(ingredients));
+      index++;
+    }
+
+    // Remove the trailing comma from the updateQuery
+    updateQuery = updateQuery.slice(0, -1);
+
+    updateQuery += " WHERE id = $5 RETURNING id, recipe_name, description;";
+
+    // Add recipeId to the end of the values array
+    values.push(recipeId);
+
     const result = await client.query(updateQuery, values);
-
     client.release();
 
     return result.rows[0]; // Return updated recipe details
@@ -134,6 +181,12 @@ const updateRecipe = async (recipeId, updatedDetails) => {
   }
 };
 
+/**
+ * Delete a specific recipe
+ * @param {string} recipeId - The ID of the recipe.
+ * @returns {Promise<Object>} a success message.
+ * @throws {Error} Throws an error if there's an issue in deleting the recipe.
+ */
 const deleteRecipe = async (recipeId) => {
   try {
     const client = await pool.connect();
@@ -160,6 +213,12 @@ const deleteRecipe = async (recipeId) => {
   }
 };
 
+/**
+ * Get the ingredients from a specific recipe
+ * @param {string} recipeId - The ID of the recipe.
+ * @returns {Promise<Object>} Ingredients of the specific recipe.
+ * @throws {Error} Throws an error if there's an issue in fetching the ingredients.
+ */
 const getRecipeIngredients = async (recipeId) => {
   try {
     const client = await pool.connect();
@@ -186,6 +245,12 @@ const getRecipeIngredients = async (recipeId) => {
   }
 };
 
+/**
+ * Get the instructions from a specific recipe
+ * @param {string} recipeId - The ID of the recipe.
+ * @returns {Promise<Object>} Instructions of the specific recipe.
+ * @throws {Error} Throws an error if there's an issue in fetching the instructions.
+ */
 const getRecipeInstructions = async (recipeId) => {
   try {
     const client = await pool.connect();
@@ -212,6 +277,11 @@ const getRecipeInstructions = async (recipeId) => {
   }
 };
 
+/**
+ * Delete all the recipes
+ * @returns {Promise<Object>}  a success message.
+ * @throws {Error} Throws an error if there's an issue in deleting the recipes.
+ */
 const deleteAllRecipes = async () => {
   try {
     const client = await pool.connect();
@@ -238,6 +308,34 @@ const deleteAllRecipes = async () => {
   }
 };
 
+/**
+ * Get all the recipes from specific user
+ * @param {string} userId - The ID of the user.
+ * @returns {Promise<Array>} Array of recipe objects without the ingredients and instructions.
+ * @throws {Error} Throws an error if there's an issue in fetching the recipes from that user.
+ */
+const getRecipesByUserId = async (userId) => {
+  try {
+    const client = await pool.connect();
+
+    // Fetch a recipe by ID from the database
+    const result = await client.query(
+      "SELECT id, recipe_name, description, user_id FROM recipes WHERE user_id = $1",
+      [userId]
+    );
+
+    // Release the client back to the pool
+    client.release();
+
+    // Return the retrieved recipes
+    return result.rows;
+  } catch (err) {
+    // Log and throw error if any
+    console.error("Error fetching recipes with userId:", err);
+    throw new Error("Error fetching recipes with userId");
+  }
+};
+
 module.exports = {
   getAllRecipes,
   getRecipeById,
@@ -247,4 +345,5 @@ module.exports = {
   getRecipeIngredients,
   getRecipeInstructions,
   deleteAllRecipes,
+  getRecipesByUserId,
 };

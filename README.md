@@ -10,8 +10,8 @@
       - [Prerequisites](#prerequisites)
       - [Steps](#steps)
 
-
 ## Task description
+
 This assignment serves to evaluate your quality as a developer. The conventions you follow,
 practices you employ or techniques you use are more important than the content of your
 application. The API you will write during this semester is allowed to have any subject you
@@ -21,9 +21,13 @@ desired standard.
 ## Startup Backend
 
 ### Development Environment Setup
+
 #### About
+
 This setup guide helps configure the development environment for the backend application using Docker and environment-specific configuration files. Verify each step to ensure a smooth setup and operational backend environment for development purposes.
+
 #### Prerequisites
+
 - Ensure Docker and Docker Compose are installed on your system.
 - Have access to the backend application codebase.
 

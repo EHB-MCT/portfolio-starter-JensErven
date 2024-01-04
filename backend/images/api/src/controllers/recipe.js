@@ -26,9 +26,10 @@ const getRecipe = async (req, res) => {
 };
 
 const createRecipe = async (req, res) => {
-  const { recipe_name, description, instructions, ingredients } = req.body;
+  const { recipe_name, description, instructions, ingredients, userId } =
+    req.body;
   try {
-    const newRecipe = await recipeService.createRecipe({
+    const newRecipe = await recipeService.createRecipe(userId, {
       recipe_name,
       description,
       instructions,
@@ -107,6 +108,17 @@ const deleteAllRecipes = async (req, res) => {
   }
 };
 
+const getLoggedInUserRecipes = async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const recipes = await recipeService.getRecipesByUserId(userId);
+
+    return res.json({ recipes });
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
 module.exports = {
   getRecipes,
   getRecipe,
@@ -116,4 +128,5 @@ module.exports = {
   getRecipeIngredients,
   getRecipeInstructions,
   deleteAllRecipes,
+  getLoggedInUserRecipes,
 };

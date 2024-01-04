@@ -9,6 +9,7 @@ CREATE TABLE users (
 -- Create recipes table
 CREATE TABLE recipes (
     id UUID PRIMARY KEY,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE, -- Foreign key referencing users table
     recipe_name VARCHAR(255) NOT NULL,
     description TEXT,
     instructions JSONB,

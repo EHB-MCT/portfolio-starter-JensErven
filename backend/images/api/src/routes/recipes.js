@@ -9,6 +9,7 @@ const {
   getRecipeIngredients,
   getRecipeInstructions,
   deleteAllRecipes,
+  getLoggedInUserRecipes,
 } = require("../controllers/recipe");
 
 /**
@@ -32,7 +33,7 @@ router.get("/:recipeId", getRecipe);
  * Create a new recipe.
  * @name Create Recipe
  * @route {POST} /api/recipes
- * @param {Object} Recipe details - e.g., recipe_name, description, instructions, ingredients.
+ * @param {Object} Recipe details & userId - e.g., recipe_name, description, instructions, ingredients, userId .
  * @returns {Object} Details of the newly created recipe.
  */
 router.post("/", createRecipe);
@@ -42,8 +43,8 @@ router.post("/", createRecipe);
  * @name Update Recipe
  * @route {PUT} /api/recipes/:recipeId
  * @param {string} recipeId - ID of the recipe to update.
- * @param {Object} Updated recipe details.
- * @returns {Object} Details of the updated recipe.
+ * @param {Object} Updated recipe details - e.g., recipe_name, description, instructions, ingredients.
+ * @returns {Object} Details of the updated recipe - eg., recipe_name, description.
  */
 router.put("/:recipeId", updateRecipe);
 
@@ -81,5 +82,14 @@ router.get("/:recipeId/instructions", getRecipeInstructions);
  * @returns {string} Confirmation message.
  */
 router.delete("/", deleteAllRecipes);
+
+/**
+ * Retrieve all recipes with specific user_id
+ * @name Get All Recipes from specific user
+ * @route {GET} /api/recipes/user/:userId
+ * @param {string} userId - ID of the user.
+ * @returns {Array.<Object>} Array of recipe objects without the ingredients and instructions.
+ */
+router.get("/user/:userId", getLoggedInUserRecipes);
 
 module.exports = router;
