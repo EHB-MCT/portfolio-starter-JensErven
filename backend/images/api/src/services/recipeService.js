@@ -31,11 +31,22 @@ const getRecipeById = async (recipeId) => {
       .from("recipes")
       .where({ id: recipeId })
       .first();
-
-    return recipe || null;
+    if (!recipe) {
+      return {
+        status: 404,
+        data: null,
+      };
+    } else if (recipe) {
+      return {
+        status: 200, // Success
+        data: recipe,
+      };
+    }
   } catch (error) {
-    console.error("Error fetching recipe by ID:", error);
-    throw new Error("Error fetching recipe by ID");
+    return {
+      status: 500, // Internal server error
+      data: null,
+    };
   }
 };
 
@@ -51,6 +62,13 @@ const createRecipe = async (userId, recipeDetails) => {
     const { recipe_name, description, instructions, ingredients } =
       recipeDetails;
     const randomUUID = uuidv4();
+
+    // Check if the user exists in the user table
+    const userExists = await knex("users").where({ id: userId }).first();
+
+    if (!userExists) {
+      throw new Error("User not found"); // Throw an error if the user doesn't exist
+    }
 
     // Stringify instructions and ingredients as JSON strings
     const stringifiedInstructions = JSON.stringify(instructions);
@@ -122,17 +140,18 @@ const updateRecipe = async (recipeId, updatedDetails) => {
  */
 const deleteRecipe = async (recipeId) => {
   try {
+    const recipe = await knex("recipes").where({ id: recipeId }).first();
+
+    if (!recipe) {
+      return { status: 404, message: "recipe on this id not found" };
+    }
     // Delete the recipe from the database using Knex's delete method
     const deletedRecipe = await knex("recipes")
       .where({ id: recipeId })
       .del()
       .returning("id");
 
-    if (!deletedRecipe.length) {
-      return null; // Recipe not found
-    }
-
-    return { message: "Recipe deleted successfully" };
+    return { status: 200, message: "Recipe deleted successfully" };
   } catch (error) {
     console.error("Error deleting recipe:", error);
     throw new Error("Error deleting recipe");
@@ -147,17 +166,13 @@ const deleteRecipe = async (recipeId) => {
  */
 const getRecipeIngredients = async (recipeId) => {
   try {
-    // Retrieve ingredients for the specific recipe using Knex
-    const recipe = await knex("recipes")
-      .select("ingredients")
-      .where({ id: recipeId })
-      .first();
+    const recipe = await knex("recipes").where({ id: recipeId }).first();
 
     if (!recipe) {
-      return null; // Recipe not found
+      return { status: 404, data: null };
+    } else if (recipe) {
+      return { status: 200, data: recipe.ingredients };
     }
-
-    return recipe.ingredients;
   } catch (error) {
     console.error("Error fetching recipe ingredients:", error);
     throw new Error("Error fetching recipe ingredients");
@@ -179,10 +194,10 @@ const getRecipeInstructions = async (recipeId) => {
       .first();
 
     if (!recipe) {
-      return null; // Recipe not found
+      return { status: 404, data: null };
+    } else if (recipe) {
+      return { status: 200, data: recipe.instructions };
     }
-
-    return recipe.instructions;
   } catch (error) {
     console.error("Error fetching recipe instructions:", error);
     throw new Error("Error fetching recipe instructions");

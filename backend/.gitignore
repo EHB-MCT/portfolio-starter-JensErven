@@ -3,5 +3,5 @@
 /config/production.env
 /config/test.env
 .env
-/config
+
 /_backup

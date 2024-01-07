@@ -5,6 +5,7 @@ services:
     build: ./images/api
     volumes:
       - ./images/api/src:/usr/app/src
+      - ./images/api/src/__tests__:/usr/app/src/__tests__
     environment:
       NODE_ENV: "development"
     env_file:
@@ -14,7 +15,9 @@ services:
         condition: service_healthy
 
     user: "node"
-    command: npm run dev
+    command: ["npm", "run", "dev"]
+    ports:
+      - "3000:3000"
 
   store:
     container_name: store

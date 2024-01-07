@@ -71,7 +71,7 @@ router.get("/:recipeId/ingredients", getRecipeIngredients);
  * @name Get Recipe Instructions
  * @route {GET} /api/recipes/:recipeId/instructions
  * @param {string} recipeId - ID of the recipe.
- * @returns {Array.<Object>} Array of instructions for the specified recipe.
+ * @returns {Array} Array of instructions for the specified recipe.
  */
 router.get("/:recipeId/instructions", getRecipeInstructions);
 

@@ -12,9 +12,17 @@ Dev-5 course-project task,
       - [About](#about)
       - [Prerequisites](#prerequisites)
       - [Steps](#steps)
+    - [Production Environment Quikstart](#production-environment-quikstart)
+      - [About](#about-1)
+      - [Prerequisites](#prerequisites-1)
+      - [Steps](#steps-1)
   - [Status](#status)
   - [License](#license)
   - [Endpoints](#endpoints)
+    - [Test in "Postman" vscode extension](#test-in-postman-vscode-extension)
+      - [File Location](#file-location)
+      - [About](#about-2)
+      - [Important](#important)
     - [User Authentication](#user-authentication)
       - [Register User](#register-user)
       - [Login User](#login-user)
@@ -60,26 +68,69 @@ This setup guide helps configure the development environment for the backend app
    - Navigate to the root folder of the backend application.
 
 2. **Configuring Database Credentials**
-   - Create a `config` folder within the backend root directory.
+   - Navigate to the `config` folder within the backend root directory.
    - Inside the `config` folder, add an `.env.dev` file.
    - Populate the `.env.dev` file with credentials required for connecting to the PostgreSQL database as shown in the following example.
      ```
-        POSTGRES_USER=your_username
-        POSTGRES_DB=your_database_name
+        POSTGRES_USER=postgres
+        POSTGRES_DB=postgres
         POSTGRES_PASSWORD=your_password
         POSTGRES_PORT=5432
-        POSTGRES_HOST=postgres
      ```
 
 3. **Launching Development Environment**
-   - In the terminal, navigate to the backend directory using `cd ./backend`.
-   - Execute `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build` to start the development environment.
+   - In the terminal, navigate to the backend directory.
+   - Use the following command in the terminal `docker-compose -f docker-compose.dev.yml up --build` to start the development environment.
+
+4. **Verifying Setup**
+   - Check if the containers (PostgreSQL and API) are running using the `docker ps` command.
+   - Use a tool like TablePlus to connect to the hosted PostgreSQL database container.
+   - Ensure the database contains the expected tables (`recipes` and `users`).
+   - Inspect if the `recipes` and `users` table are populated correctly with dummydata based on the ingrated seeder funtions.
+   - Test an API endpoint (e.g., liking) using Postman or any other REST client extension.
+   - Verify in the terminal if the tests using `jest` package have passed correctly.
+
+
+### Production Environment Quikstart
+
+#### About
+
+This setup guide helps configure the production environment for the backend application using Docker and environment-specific configuration files. Verify each step to ensure a smooth setup and operational backend environment for production purposes.
+
+#### Prerequisites
+
+- Ensure Docker and Docker Compose are installed on your system.
+- Have access to the backend application codebase.
+
+#### Steps
+
+1. **Docker and Backend Folder Setup**
+   - Check if Docker and Docker Compose are installed on your system.
+   - Open Docker Hub to confirm your Docker setup is operational.
+   - Navigate to the root folder of the backend application.
+
+2. **Configuring Database Credentials**
+   - Navigate to the `config` folder within the backend root directory.
+   - Inside the `config` folder, add an `.env.prod` file.
+   - Populate the `.env.prod` file with credentials required for connecting to the PostgreSQL database as shown in the following example.
+     ```
+        POSTGRES_USER=postgres
+        POSTGRES_DB=postgres
+        POSTGRES_PASSWORD=your_password
+        POSTGRES_PORT=5432
+     ```
+
+3. **Launching Production Environment**
+   - In the terminal, navigate to the backend directory.
+   - Use the following command in the terminal `docker-compose -f docker-compose.prod.yml up --build` to start the production environment.
 
 4. **Verifying Setup**
    - Check if the containers (PostgreSQL and API) are running using the `docker ps` command.
    - Use a tool like TablePlus to connect to the hosted PostgreSQL database container.
    - Ensure the database contains the expected tables (`recipes` and `users`).
    - Test an API endpoint (e.g., liking) using Postman or any other REST client extension.
+   - Verify in the terminal if the tests using `jest` package have passed correctly.
+
 
 ## Status
 
@@ -90,6 +141,15 @@ The project is currently in development.
 This project is licensed under the [MIT License](LICENSE).
 
 ## Endpoints
+
+### Test in "Postman" vscode extension
+#### File Location
+Find the file to import endpoints (POSTMAN) for `users` and `recipes` here: [File Location](./backend/images/api/thunder-collection_dev-5-starter-portfolio-endpoints_postman.json)
+
+#### About
+I've added a file to import all the endpoints for the `users` and `recipes` to Postman Copy this file and add to Postman to test out the endpoints provided.
+#### Important
+Keep in mind that some userIDs or recipeIDs may defer. So be sure to check the seeded dummydata that was added to the tables `users` and `recipes` in a software tool like Tableplus.
 
 ### User Authentication
 
@@ -148,15 +208,16 @@ This project is licensed under the [MIT License](LICENSE).
 - **Description:** Creates a new recipe.
 - **Request Body:**
   ```json
-   {
-   "recipe_name": "Example Recipe",
-   "description": "This is an example recipe.",
-   "instructions": ["Step 1: Do something", "Step 2: Do something else"],
-   "ingredients": [
-      {"name": "Ingredient 1", "quantity": "2 cups"},
-      {"name": "Ingredient 2", "quantity": "1 tbsp"}
-   ]
-   }
+    {
+      "userId": "c81a0696-4e68-4e53-a0d6-362fd0a11e2d",
+      "recipe_name": "test recipe 2",
+      "description": "This is an example recipe description.",
+      "instructions": ["Step 1: Do something", "Step 2: Do something else"],
+      "ingredients": [
+        {"name": "Ingredient 1", "quantity": "2 cups"},
+        {"name": "Ingredient 2", "quantity": "1 tbsp"}
+      ]
+    }
 - **Response:** Returns details of the newly created recipe.
 
 #### Update Recipe
@@ -164,15 +225,15 @@ This project is licensed under the [MIT License](LICENSE).
 - **Description:** Updates an existing recipe by its ID.
 - **Request Body:**
   ```json
-   {
-   "recipe_name": "Example Recipe",
-   "description": "This is an example recipe.",
-   "instructions": ["Step 1: Do something", "Step 2: Do something else"],
-   "ingredients": [
-      {"name": "Ingredient 1", "quantity": "2 cups"},
-      {"name": "Ingredient 2", "quantity": "1 tbsp"}
-   ]
-   }
+    {
+      "recipe_name": "updated - recipe name",
+      "description": "updated - This is an example recipe description.",
+      "instructions": ["updated - Step 1: Do something", "updated - Step 2: Do something else"],
+      "ingredients": [
+        {"name": "updated - Ingredient 1", "quantity": "updated - 2 cups"},
+        {"name": "updated - Ingredient 2", "quantity": "updated - 1 tbsp"}
+      ]
+    }
 - **Response:** Returns details of the updated recipe.
 
 #### Delete Recipe

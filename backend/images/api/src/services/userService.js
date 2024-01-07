@@ -62,7 +62,7 @@ const deleteUser = async (userId) => {
  * @returns {Promise<Object|null>} User details if found, null if not found.
  * @throws {Error} Throws an error if there's an issue in fetching the user by email.
  */
-const getUserByEmail = async (email) => {
+const getUserByEmailWithPassword = async (email) => {
   try {
     const user = await knex("users").where({ email }).first();
 
@@ -135,7 +135,7 @@ const deleteAllUsers = async () => {
 module.exports = {
   createUser,
   deleteUser,
-  getUserByEmail,
+  getUserByEmailWithPassword,
   getUserById,
   deleteAllUsers,
 };
