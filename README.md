@@ -67,22 +67,11 @@ This setup guide helps configure the development environment for the backend app
    - Open Docker Hub to confirm your Docker setup is operational.
    - Navigate to the root folder of the backend application.
 
-2. **Configuring Database Credentials**
-   - Navigate to the `config` folder within the backend root directory.
-   - Inside the `config` folder, add an `.env.dev` file.
-   - Populate the `.env.dev` file with credentials required for connecting to the PostgreSQL database as shown in the following example.
-     ```
-        POSTGRES_USER=postgres
-        POSTGRES_DB=postgres
-        POSTGRES_PASSWORD=your_password
-        POSTGRES_PORT=5432
-     ```
-
-3. **Launching Development Environment**
+2. **Launching Development Environment**
    - In the terminal, navigate to the backend directory.
    - Use the following command in the terminal `docker-compose -f docker-compose.dev.yml up --build` to start the development environment.
 
-4. **Verifying Setup**
+3. **Verifying Setup**
    - Check if the containers (PostgreSQL and API) are running using the `docker ps` command.
    - Use a tool like TablePlus to connect to the hosted PostgreSQL database container.
    - Ensure the database contains the expected tables (`recipes` and `users`).
@@ -109,22 +98,11 @@ This setup guide helps configure the production environment for the backend appl
    - Open Docker Hub to confirm your Docker setup is operational.
    - Navigate to the root folder of the backend application.
 
-2. **Configuring Database Credentials**
-   - Navigate to the `config` folder within the backend root directory.
-   - Inside the `config` folder, add an `.env.prod` file.
-   - Populate the `.env.prod` file with credentials required for connecting to the PostgreSQL database as shown in the following example.
-     ```
-        POSTGRES_USER=postgres
-        POSTGRES_DB=postgres
-        POSTGRES_PASSWORD=your_password
-        POSTGRES_PORT=5432
-     ```
-
-3. **Launching Production Environment**
+2. **Launching Production Environment**
    - In the terminal, navigate to the backend directory.
    - Use the following command in the terminal `docker-compose -f docker-compose.prod.yml up --build` to start the production environment.
 
-4. **Verifying Setup**
+3. **Verifying Setup**
    - Check if the containers (PostgreSQL and API) are running using the `docker ps` command.
    - Use a tool like TablePlus to connect to the hosted PostgreSQL database container.
    - Ensure the database contains the expected tables (`recipes` and `users`).
