@@ -1,17 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const { Pool } = require("pg");
-
-require("dotenv").config(); // Loads variables from .env file
-
-const poolConfig = {
-  user: process.env.POSTGRES_USER,
-  password: process.env.POSTGRES_PASSWORD,
-  host: process.env.POSTGRES_HOST,
-  port: process.env.POSTGRES_PORT,
-  database: process.env.POSTGRES_DB,
-};
-
-const pool = new Pool(poolConfig);
+const knex = require("knex")(require("../db/knexfile"));
 
 /**
  * Retrieve a list of all recipes.
@@ -19,21 +8,12 @@ const pool = new Pool(poolConfig);
  */
 const getAllRecipes = async () => {
   try {
-    const client = await pool.connect();
-
-    // Fetch specific columns from the database
-    const result = await client.query(
-      "SELECT id, recipe_name, description, user_id FROM recipes"
-    );
-
-    // Release the client back to the pool
-    client.release();
-
-    // Return the retrieved recipes
-    return result.rows;
-  } catch (err) {
-    // Log and throw error if any
-    console.error("Error fetching recipes:", err);
+    const recipes = await knex
+      .select("id", "recipe_name", "description", "user_id")
+      .from("recipes");
+    return recipes;
+  } catch (error) {
+    console.error("Error fetching recipes:", error);
     throw new Error("Error fetching recipes");
   }
 };
@@ -41,27 +21,20 @@ const getAllRecipes = async () => {
 /**
  * Retrieve a recipe by its id.
  * @param {string} recipeId - The ID of the recipe.
- * @returns {Promise<Array>} Array with this one recipe found.
+ * @returns {Promise<Object|null>} Object with this one recipe found or null if not found.
  * @throws {Error} Throws an error if there's an issue with fetching the recipe.
  */
 const getRecipeById = async (recipeId) => {
   try {
-    const client = await pool.connect();
+    const recipe = await knex
+      .select("id", "recipe_name", "description", "user_id")
+      .from("recipes")
+      .where({ id: recipeId })
+      .first();
 
-    // Fetch a recipe by ID from the database
-    const result = await client.query(
-      "SELECT id, recipe_name, description, user_id FROM recipes WHERE id = $1",
-      [recipeId]
-    );
-
-    // Release the client back to the pool
-    client.release();
-
-    // Return the retrieved recipe
-    return result.rows[0];
-  } catch (err) {
-    // Log and throw error if any
-    console.error("Error fetching recipe by ID:", err);
+    return recipe || null;
+  } catch (error) {
+    console.error("Error fetching recipe by ID:", error);
     throw new Error("Error fetching recipe by ID");
   }
 };
@@ -75,50 +48,31 @@ const getRecipeById = async (recipeId) => {
  */
 const createRecipe = async (userId, recipeDetails) => {
   try {
-    // Establish a connection from the pool
-    const client = await pool.connect();
-
-    // Start a transaction
-    await client.query("BEGIN");
-    const randomUUID = uuidv4();
-    // Example recipe details (adjust as needed)
     const { recipe_name, description, instructions, ingredients } =
       recipeDetails;
+    const randomUUID = uuidv4();
 
-    // Stringify instructions and ingredients as JSON arrays
+    // Stringify instructions and ingredients as JSON strings
     const stringifiedInstructions = JSON.stringify(instructions);
     const stringifiedIngredients = JSON.stringify(ingredients);
 
-    // Insert a new recipe into the database
-    const insertQuery = `
-    INSERT INTO recipes (id, user_id, recipe_name, description, instructions, ingredients)
-    VALUES ($1, $2, $3, $4, $5, $6)
-   RETURNING id;
- `;
-    const values = [
-      randomUUID,
-      userId,
+    const newRecipe = {
+      id: randomUUID,
+      user_id: userId,
       recipe_name,
       description,
-      stringifiedInstructions,
-      stringifiedIngredients,
-    ];
-    const result = await client.query(insertQuery, values);
+      instructions: stringifiedInstructions,
+      ingredients: stringifiedIngredients,
+    };
 
-    // Commit the transaction
-    await client.query("COMMIT");
+    // Insert a new recipe into the database using Knex's insert method
+    await knex("recipes").insert(newRecipe);
 
-    // Release the client back to the pool
-    client.release();
-
-    // Return the ID of the newly inserted recipe
-    return { id: result.rows[0].id, ...recipeDetails };
-  } catch (err) {
-    // Log the error for debugging (you might want to log to a file or console)
-    console.error("Error creating recipe:", err);
-
-    // Rethrow the actual error for visibility
-    throw err;
+    // Return the newly created recipe details
+    return { id: randomUUID, ...recipeDetails };
+  } catch (error) {
+    console.error("Error creating recipe:", error);
+    throw new Error("Error creating recipe");
   }
 };
 
@@ -131,52 +85,31 @@ const createRecipe = async (userId, recipeDetails) => {
  */
 const updateRecipe = async (recipeId, updatedDetails) => {
   try {
-    const client = await pool.connect();
-
-    const values = [];
-    let updateQuery = "UPDATE recipes SET";
-
-    // Destructure the updated details
     const { recipe_name, description, instructions, ingredients } =
       updatedDetails;
 
-    let index = 1; // Start index for placeholder values
+    const updatedRecipe = {};
 
     if (recipe_name !== undefined) {
-      updateQuery += ` recipe_name = $${index},`;
-      values.push(recipe_name);
-      index++;
+      updatedRecipe.recipe_name = recipe_name;
     }
     if (description !== undefined) {
-      updateQuery += ` description = $${index},`;
-      values.push(description);
-      index++;
+      updatedRecipe.description = description;
     }
     if (instructions !== undefined) {
-      updateQuery += ` instructions = $${index},`;
-      values.push(JSON.stringify(instructions));
-      index++;
+      updatedRecipe.instructions = JSON.stringify(instructions);
     }
     if (ingredients !== undefined) {
-      updateQuery += ` ingredients = $${index},`;
-      values.push(JSON.stringify(ingredients));
-      index++;
+      updatedRecipe.ingredients = JSON.stringify(ingredients);
     }
 
-    // Remove the trailing comma from the updateQuery
-    updateQuery = updateQuery.slice(0, -1);
+    // Update the recipe in the database using Knex's update method
+    await knex("recipes").where({ id: recipeId }).update(updatedRecipe);
 
-    updateQuery += " WHERE id = $5 RETURNING id, recipe_name, description;";
-
-    // Add recipeId to the end of the values array
-    values.push(recipeId);
-
-    const result = await client.query(updateQuery, values);
-    client.release();
-
-    return result.rows[0]; // Return updated recipe details
-  } catch (err) {
-    console.error("Error updating recipe:", err);
+    // Return the updated recipe details
+    return { id: recipeId, ...updatedDetails };
+  } catch (error) {
+    console.error("Error updating recipe:", error);
     throw new Error("Error updating recipe");
   }
 };
@@ -189,26 +122,19 @@ const updateRecipe = async (recipeId, updatedDetails) => {
  */
 const deleteRecipe = async (recipeId) => {
   try {
-    const client = await pool.connect();
+    // Delete the recipe from the database using Knex's delete method
+    const deletedRecipe = await knex("recipes")
+      .where({ id: recipeId })
+      .del()
+      .returning("id");
 
-    // Delete the recipe from the database
-    const deleteQuery = `
-      DELETE FROM recipes
-      WHERE id = $1
-      RETURNING id;
-    `;
-
-    const result = await client.query(deleteQuery, [recipeId]);
-
-    client.release();
-
-    if (result.rowCount === 0) {
+    if (!deletedRecipe.length) {
       return null; // Recipe not found
     }
 
     return { message: "Recipe deleted successfully" };
-  } catch (err) {
-    console.error("Error deleting recipe:", err);
+  } catch (error) {
+    console.error("Error deleting recipe:", error);
     throw new Error("Error deleting recipe");
   }
 };
@@ -221,26 +147,19 @@ const deleteRecipe = async (recipeId) => {
  */
 const getRecipeIngredients = async (recipeId) => {
   try {
-    const client = await pool.connect();
+    // Retrieve ingredients for the specific recipe using Knex
+    const recipe = await knex("recipes")
+      .select("ingredients")
+      .where({ id: recipeId })
+      .first();
 
-    // Retrieve instructions for the specific recipe
-    const query = `
-      SELECT ingredients
-      FROM recipes
-      WHERE id = $1;
-    `;
-
-    const result = await client.query(query, [recipeId]);
-
-    client.release();
-
-    if (result.rowCount === 0) {
+    if (!recipe) {
       return null; // Recipe not found
     }
 
-    return result.rows[0].ingredients;
-  } catch (err) {
-    console.error("Error fetching recipe ingredients:", err);
+    return recipe.ingredients;
+  } catch (error) {
+    console.error("Error fetching recipe ingredients:", error);
     throw new Error("Error fetching recipe ingredients");
   }
 };
@@ -253,26 +172,19 @@ const getRecipeIngredients = async (recipeId) => {
  */
 const getRecipeInstructions = async (recipeId) => {
   try {
-    const client = await pool.connect();
+    // Retrieve instructions for the specific recipe using Knex
+    const recipe = await knex("recipes")
+      .select("instructions")
+      .where({ id: recipeId })
+      .first();
 
-    // Retrieve instructions for the specific recipe
-    const query = `
-      SELECT instructions
-      FROM recipes
-      WHERE id = $1;
-    `;
-
-    const result = await client.query(query, [recipeId]);
-
-    client.release();
-
-    if (result.rowCount === 0) {
+    if (!recipe) {
       return null; // Recipe not found
     }
 
-    return result.rows[0].instructions;
-  } catch (err) {
-    console.error("Error fetching recipe instructions:", err);
+    return recipe.instructions;
+  } catch (error) {
+    console.error("Error fetching recipe instructions:", error);
     throw new Error("Error fetching recipe instructions");
   }
 };
@@ -284,54 +196,32 @@ const getRecipeInstructions = async (recipeId) => {
  */
 const deleteAllRecipes = async () => {
   try {
-    const client = await pool.connect();
-
-    // Start a transaction (optional but recommended)
-    await client.query("BEGIN");
-
-    // Delete all recipes from the table
-    const deleteQuery = `DELETE FROM recipes`;
-    await client.query(deleteQuery);
-
-    // Commit the transaction
-    await client.query("COMMIT");
-
-    // Release the client back to the pool
-    client.release();
+    // Delete all recipes using Knex
+    await knex("recipes").del();
 
     return { message: "All recipes deleted successfully" };
-  } catch (err) {
-    // Rollback the transaction in case of errors
-    await client.query("ROLLBACK");
-    console.error("Error deleting all recipes:", err);
+  } catch (error) {
+    console.error("Error deleting all recipes:", error);
     throw new Error("Error deleting all recipes");
   }
 };
 
 /**
- * Get all the recipes from specific user
+ * Get all the recipes from a specific user
  * @param {string} userId - The ID of the user.
  * @returns {Promise<Array>} Array of recipe objects without the ingredients and instructions.
  * @throws {Error} Throws an error if there's an issue in fetching the recipes from that user.
  */
 const getRecipesByUserId = async (userId) => {
   try {
-    const client = await pool.connect();
+    // Fetch recipes by user ID using Knex
+    const recipes = await knex("recipes")
+      .select("id", "recipe_name", "description", "user_id")
+      .where("user_id", userId);
 
-    // Fetch a recipe by ID from the database
-    const result = await client.query(
-      "SELECT id, recipe_name, description, user_id FROM recipes WHERE user_id = $1",
-      [userId]
-    );
-
-    // Release the client back to the pool
-    client.release();
-
-    // Return the retrieved recipes
-    return result.rows;
-  } catch (err) {
-    // Log and throw error if any
-    console.error("Error fetching recipes with userId:", err);
+    return recipes;
+  } catch (error) {
+    console.error("Error fetching recipes with userId:", error);
     throw new Error("Error fetching recipes with userId");
   }
 };
