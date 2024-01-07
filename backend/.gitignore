@@ -1,7 +1,7 @@
 /images/api/node_modules
-/config/development.env
-/config/production.env
-/config/test.env
-.env
+/config/.env.dev
+/config/.env.prod
+
+
 
 /_backup
