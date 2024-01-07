@@ -30,7 +30,7 @@ router.post("/login", loginUser);
  * Retrieve details of a specific user by their ID.
  * @name Get User by ID
  * @route {GET} /api/users/:userId
- * @param {string} userId - ID of the user.
+ * @param {Object} User details - e.g., username, email, password.
  * @returns {Object} Details of the requested user.
  */
 router.get("/:userId", getUserById);

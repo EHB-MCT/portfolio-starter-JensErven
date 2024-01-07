@@ -5,9 +5,9 @@ services:
     build: ./images/api
     volumes:
       - ./images/api/src:/usr/app/src
-      - ./images/api/src/__tests__:/usr/app/src/__tests__
     environment:
       NODE_ENV: "development"
+      PGHOST: "store" # Use the service name here
     env_file:
       - ./config/.env.dev
     depends_on:
@@ -15,18 +15,14 @@ services:
         condition: service_healthy
 
     user: "node"
-    command: ["npm", "run", "dev"]
-    ports:
-      - "3000:3000"
+    command: npm run test-watch
 
   store:
     container_name: store
     image: postgres:latest
-    restart: on-failure
+    restart: always
     env_file:
-      - ./config/.env.dev # Path to your .env.dev file
-    environment:
-      PG_CONNECTION_STRING: postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@store:5432/$POSTGRES_DB
+      - ./config/.env.dev
     ports:
       - "5432:5432"
     volumes:
@@ -36,6 +32,3 @@ services:
       interval: 10s # Check the health status every 10 seconds
       retries: 5 # Number of retries before considering it unhealthy
       start_period: 20s # Wait 20 seconds after the container starts before starting checks
-
-volumes:
-  _backup:

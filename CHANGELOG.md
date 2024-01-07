@@ -24,14 +24,3 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - List of fixes implemented.
 
-## [Version] - YYYY-MM-DD
-
-### Added
-- List of new features or additions.
-
-### Changed
-- List of changes made.
-
-### Fixed
-- List of fixes implemented.
-
