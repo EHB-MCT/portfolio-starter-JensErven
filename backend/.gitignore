@@ -1,0 +1,7 @@
+/images/api/node_modules
+/config/.env.dev
+/config/.env.prod
+
+
+
+/_backup

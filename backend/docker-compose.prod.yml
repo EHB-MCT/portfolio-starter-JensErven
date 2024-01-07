@@ -1,0 +1,41 @@
+version: "3.2"
+
+services:
+  api:
+    build: ./images/api
+    volumes:
+      - ./images/api/src:/usr/app/src
+      - ./images/api/src/__tests__:/usr/app/src/__tests__
+    environment:
+      NODE_ENV: "production"
+    env_file:
+      - ./config/.env.prod
+    depends_on:
+      store:
+        condition: service_healthy
+
+    user: "node"
+    command: ["npm", "run", "start-prod"]
+    ports:
+      - "3000:3000"
+
+  store:
+    container_name: store
+    image: postgres:latest
+    restart: on-failure
+    env_file:
+      - ./config/.env.prod # Path to your .env.dev file
+    environment:
+      PG_CONNECTION_STRING: postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@store:5432/$POSTGRES_DB
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./_backup:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"] # Health check command to verify database availability
+      interval: 10s # Check the health status every 10 seconds
+      retries: 5 # Number of retries before considering it unhealthy
+      start_period: 20s # Wait 20 seconds after the container starts before starting checks
+
+volumes:
+  _backup:

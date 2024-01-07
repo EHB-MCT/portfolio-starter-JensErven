@@ -1,0 +1,321 @@
+{
+    "info": {
+        "_postman_id": "7502795e-51aa-49b2-b8a5-eba17a129232",
+        "name": "dev-5-starter-portfolio-endpoints",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": ""
+    },
+    "item": [
+        {
+            "name": "users",
+            "item": [
+                {
+                    "name": "registerUser",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "http://localhost:3000/api/users/register",
+                            "path": [
+                                "api",
+                                "users",
+                                "register"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"username\": \"username-7\",\n  \"email\": \"example-7@gmail.com\",\n  \"password\": \"testpassword\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "deleteUser",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "http://localhost:3000/api/users/09bef9e1-0701-4318-be83-70e040172347",
+                            "path": [
+                                "api",
+                                "users",
+                                "09bef9e1-0701-4318-be83-70e040172347"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        }
+                    }
+                },
+                {
+                    "name": "loginUser",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "http://localhost:3000/api/users/login",
+                            "path": [
+                                "api",
+                                "users",
+                                "login"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n\n  \"password\": \"testpasswd\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "getUserById",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "http://localhost:3000/api/users/13ed06a7-66dc-483c-b542-2e0c34b10",
+                            "path": [
+                                "api",
+                                "users",
+                                "13ed06a7-66dc-483c-b542-2e0c34b10"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        }
+                    }
+                },
+                {
+                    "name": "deleteAllUsers",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "http://localhost:3000/api/users",
+                            "path": [
+                                "api",
+                                "users"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "recipes",
+            "item": [
+                {
+                    "name": "createRecipe",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "http://localhost:3000/api/recipes",
+                            "path": [
+                                "api",
+                                "recipes"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"userId\": \"1b4b2eed-8cc7-4d2a-a439-4bd2bcd1fbce\",\n  \"recipe_name\": \"test recipe 2\",\n  \"description\": \"This is an example recipe description.\",\n  \"instructions\": [\"Step 1: Do something\", \"Step 2: Do something else\"],\n  \"ingredients\": [\n    {\"name\": \"Ingredient 1\", \"quantity\": \"2 cups\"},\n    {\"name\": \"Ingredient 2\", \"quantity\": \"1 tbsp\"}\n  ]\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "getRecipeById",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "http://localhost:3000/api/recipes/fa442302-1183-415f-853f-656d56db4f02",
+                            "path": [
+                                "api",
+                                "recipes",
+                                "fa442302-1183-415f-853f-656d56db4f02"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        }
+                    }
+                },
+                {
+                    "name": "getAllRecipes",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "http://localhost:3000/api/recipes",
+                            "path": [
+                                "api",
+                                "recipes"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        }
+                    }
+                },
+                {
+                    "name": "deleteRecipe",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "http://localhost:3000/api/recipes/fd2fea65-6bb0-4302-b6d1-982c9384cb6f",
+                            "path": [
+                                "api",
+                                "recipes",
+                                "fd2fea65-6bb0-4302-b6d1-982c9384cb6f"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        }
+                    }
+                },
+                {
+                    "name": "getRecipeIngredients",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "http://localhost:3000/api/recipes/fac8ddf5-2703-4f68-9116-3b5c04bcad2a/ingredients",
+                            "path": [
+                                "api",
+                                "recipes",
+                                "fac8ddf5-2703-4f68-9116-3b5c04bcad2a",
+                                "ingredients"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        }
+                    }
+                },
+                {
+                    "name": "getRecipeInstructions",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "http://localhost:3000/api/recipes/f6ffaabc-b4f1-497e-94d4-e358ad446ba8/instructions",
+                            "path": [
+                                "api",
+                                "recipes",
+                                "f6ffaabc-b4f1-497e-94d4-e358ad446ba8",
+                                "instructions"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        }
+                    }
+                },
+                {
+                    "name": "updateRecipe",
+                    "request": {
+                        "method": "PUT",
+                        "url": {
+                            "raw": "http://localhost:3000/api/recipes/d733a713-793f-4fa7-8789-b0d2d83758f3",
+                            "path": [
+                                "api",
+                                "recipes",
+                                "d733a713-793f-4fa7-8789-b0d2d83758f3"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"recipe_name\": \"testtesttest\",\n  \"description\": \"This is an example recipe description.\",\n  \"instructions\": [\"Stap 1\", \"Stap 2\"],\n  \"ingredients\": [\n    {\"name\": \"Appel\", \"quantity\": \"2 cups\"},\n    {\"name\": \"Peer\", \"quantity\": \"1 tbsp\"}\n  ]\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "deleteAllRecipes",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "http://localhost:3000/api/recipes",
+                            "path": [
+                                "api",
+                                "recipes"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        }
+                    }
+                },
+                {
+                    "name": "getRecipesByUserId",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "http://localhost:3000/api/recipes/user/1b4b2eed-8cc7-4d2a-a439-4bd2bcd1fbce",
+                            "path": [
+                                "api",
+                                "recipes",
+                                "user",
+                                "1b4b2eed-8cc7-4d2a-a439-4bd2bcd1fbce"
+                            ],
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test-watch": "jest --watchAll --detectOpenHandles",
+    "test": "jest --detectOpenHandles",
+    "start-prod": "npm-run-all -p start test",
+    "start": "node src/index.js",
+    "seed": "npx knex seed:run --cwd ./src/db",
+    "migrate": "npx knex migrate:latest --cwd ./src/db",
+    "dev": "npm-run-all -p migrate seed server test-watch",
+    "server": "nodemon -L src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.3",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "http": "^0.0.1-security",
+    "knex": "^3.1.0",
+    "nodemon": "^3.0.2",
+    "pg": "^8.11.3",
+    "username-generator": "^1.1.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "assert": "^2.1.0",
+    "concurrently": "^8.2.2",
+    "jest": "^29.7.0",
+    "npm-run-all": "^4.1.5",
+    "supertest": "^6.3.3"
+  }
+}
